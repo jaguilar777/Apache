@@ -28,7 +28,7 @@ build:
 	docker build \
         --build-arg VCS_REF=`git rev-parse --short HEAD` \
         --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-        --rm -t $(IMAGE_NAME):$(VERSION) .
+        --rm -t $(IMAGE_NAME):latest -t $(IMAGE_NAME):$(VERSION) .
 
 push:
 	@echo "note: If the repository is set as an automatted build you will NOT be able to push"
