@@ -28,13 +28,12 @@ EOF
 
 
 if [ ! -d /data/www/public_html ]; then
-
-	# Move default coming soon page...
+	# Make initial root web dictory
 	mkdir -p /data/www/public_html
-	mv /opt/app/*.php /data/www/public_html/
-	mv /opt/app/*.png /data/www/public_html/
-
 fi
+
+# Create default coming soon page, overwrite if it exists ...
+mv /opt/app/*.php /opt/app/*.png /data/www/public_html/
 
 
 if [ ! -d /data/apache2 ]; then
