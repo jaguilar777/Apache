@@ -1,43 +1,41 @@
-FROM htmlgraphic/ssh:latest
+FROM php:7.0-fpm
+
 MAINTAINER Jason Gegere <jason@htmlgraphic.com>
 
 # Install packages then remove cache package list information
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get update && apt-get install -yq --no-install-recommends python-software-properties software-properties-common \
-	apache2 \
-	php7.0 \
-	libapache2-mod-php7.0 \
-	mysql-client \
-	php-apcu \
-	php-imagick \
-	php7.0-fpm \
-	php7.0-zip \
-	php7.0-mysql \
-	php7.0-curl \
-	php7.0-gd \
-	php7.0-json \
-	php7.0-mcrypt \
-	php7.0-mbstring \
-	php7.0-opcache \
-	php7.0-xml \
+RUN apt-get update && apt-get install -yq python-software-properties software-properties-common \
+    apt-utils \
+    autoconf \
+	cron \
 	ghostscript \
-	libgs-dev \
 	imagemagick \
 	libmagickwand-dev \
+	libfontconfig1 \
+	libxrender1 \
+	libgs-dev \
+	libzip-dev \
+	lbzip2 \
+	locales \
+	postfix \
 	supervisor \
-	cron \
 	rsyslog \
-	postfix && apt-get clean && rm -rf /var/lib/apt/lists/*
+	zlib1g-dev && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN add-apt-repository ppa:ondrej/php
+RUN apt-get update && apt-get install -yq php7.0-zip \
+	php-common && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # POSTFIX
-RUN update-locale LANG=en_US.UTF-8
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8
 
 # Copy files to build app, add coming page to root apache dir, include self
 # signed SHA256 certs, unit tests to check over the setup
 RUN mkdir -p /opt
 COPY ./app /opt/app
 COPY ./tests /opt/tests
+
 
 # Unit tests run via build_tests.sh
 RUN tar xf /opt/tests/2.1.6.tar.gz -C /opt/tests/
@@ -75,6 +73,7 @@ ENV TERM=xterm \
 	LOG_TOKEN=$LOG_TOKEN \
 	NODE_ENVIRONMENT=$NODE_ENVIRONMENT \
 	PATH="~/.composer/vendor/bin:$PATH" \
+	PHP_VERSION=$PHP_VERSION \
 	SMTP_HOST=$SMTP_HOST \
 	SASL_USER=$SASL_USER \
 	SASL_PASS=$SASL_PASS
